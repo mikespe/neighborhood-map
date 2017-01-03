@@ -1,4 +1,43 @@
 //global map variable
+var locations = [
+  //initial location names and coordinates
+  {
+    title: 'Turvinos',
+    location: {
+      lat: 40.951103,
+      lng: -74.107734
+    },
+  },
+  {
+    title: 'Dunkin Donuts',
+    location: {
+      lat: 40.952343,
+      lng: -74.108249
+    },
+  },
+  {
+    title: 'Tani Sushi',
+    location: {
+      lat: 40.962428,
+      lng: -74.132178
+    },
+  },
+  {
+    title: 'GR Boro Hall',
+    location: {
+      lat: 40.961433,
+      lng: -74.129359
+    },
+  },
+  {
+    title: 'Habit Burger',
+    location: {
+      lat: 40.943329,
+      lng: -74.128754
+    },
+  },
+];
+
 var map;
 //initializing the map once the page loads
 function initMap() {
@@ -12,44 +51,6 @@ function initMap() {
 
     // These are the real estate listings that will be shown to the user.
     // Normally we'd have these in a database instead.
-    var locations = [
-      //initial location names and coordinates
-      {
-        title: 'Turvinos',
-        location: {
-          lat: 40.951103,
-          lng: -74.107734
-        },
-      },
-      {
-        title: 'Dunkin Donuts',
-        location: {
-          lat: 40.952343,
-          lng: -74.108249
-        },
-      },
-      {
-        title: 'Tani Sushi',
-        location: {
-          lat: 40.962428,
-          lng: -74.132178
-        },
-      },
-      {
-        title: 'GR Boro Hall',
-        location: {
-          lat: 40.961433,
-          lng: -74.129359
-        },
-      },
-      {
-        title: 'Habit Burger',
-        location: {
-          lat: 40.943329,
-          lng: -74.128754
-        },
-      },
-    ];
 
     var largeInfowindow = new google.maps.InfoWindow();
     var bounds = new google.maps.LatLngBounds();
@@ -125,13 +126,19 @@ function initMap() {
     }
   }
 
+  var komarker = function(data) {
+    this.title = ko.observable(data.title);
+    this.location = ko.observable(data.location);
+  }
+
   var ViewModel = function() {
     var self = this
-    this.placelist = ko.observablearray([]);
+
+    this.placelist = ko.observableArray([]);
 
     locations.forEach(function(locationitem){
-      self.placelist.push(locationitem);
+      self.placelist.push( new komarker(locationitem) );
     });
   };
 
-  ko.applyBindings(new ViewModel()); // This makes Knockout get to work
+ko.applyBindings(new ViewModel()); // This makes Knockout get to work
