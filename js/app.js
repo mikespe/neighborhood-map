@@ -39,7 +39,8 @@ var locations = [
 ];
 
 var map;
-//initializing the map once the page loads
+//initializing the initmap function that is called in the google api callback
+//the following is from udacity's google maps course with slight adjustments
 function initMap() {
   //empty array of markers
   var markers = [];
@@ -49,9 +50,7 @@ function initMap() {
       zoom: 13
     });
 
-    // These are the real estate listings that will be shown to the user.
-    // Normally we'd have these in a database instead.
-
+    //initializing the info window and the bounds
     var largeInfowindow = new google.maps.InfoWindow();
     var bounds = new google.maps.LatLngBounds();
 
@@ -131,7 +130,7 @@ function initMap() {
     this.lat = ko.observable(data.location.lat);
     this.lng = ko.observable(data.location.lng);
     this.location = ko.computed(function() {
-      return this.title() + " - " + this.lat() + this.lng();
+      return this.title() + " - " + this.lat() + "," + this.lng();
     }, this);
   }
 
@@ -143,6 +142,8 @@ function initMap() {
     locations.forEach(function(locationitem){
       self.placelist.push( new komarker(locationitem) );
     });
+
+
   };
 
 ko.applyBindings(new ViewModel()); // This makes Knockout get to work
