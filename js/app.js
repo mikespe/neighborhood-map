@@ -128,7 +128,11 @@ function initMap() {
 
   var komarker = function(data) {
     this.title = ko.observable(data.title);
-    this.location = ko.observable(data.location);
+    this.lat = ko.observable(data.location.lat);
+    this.lng = ko.observable(data.location.lng);
+    this.location = ko.computed(function() {
+      return this.title() + " " + this.lat() + this.lng();
+    }, this);
   }
 
   var ViewModel = function() {
