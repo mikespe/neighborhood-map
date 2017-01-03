@@ -131,7 +131,7 @@ function initMap() {
     this.lat = ko.observable(data.location.lat);
     this.lng = ko.observable(data.location.lng);
     this.location = ko.computed(function() {
-      return this.title() + " " + this.lat() + this.lng();
+      return this.title() + " - " + this.lat() + this.lng();
     }, this);
   }
 
