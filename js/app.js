@@ -96,13 +96,12 @@ function initMap() {
   };
 
   var ViewModel = function() {
-      this.firstName = ko.observable(first);
-      this.lastName = ko.observable(last);
+    var self = this
+    this.placelist = ko.observablearray([]);
 
-      this.fullName = ko.pureComputed(function() {
-          // Knockout tracks dependencies automatically. It knows that fullName depends on firstName and lastName, because these get called when evaluating fullName.
-          return this.firstName() + " " + this.lastName();
-      }, this);
+    locations.forEach(function(locationitem){
+      self.placelist.push(locationitem);
+    });
   };
 
   ko.applyBindings(new ViewModel()); // This makes Knockout get to work
