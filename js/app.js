@@ -79,6 +79,7 @@ function initMap() {
     }
     // Extend the boundaries of the map for each marker
     map.fitBounds(bounds);
+    ko.applyBindings(new ViewModel()); // This makes Knockout get to work
   };
 
   // This function populates the infowindow when the marker is clicked. We'll only allow
@@ -124,18 +125,16 @@ function initMap() {
       streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
       // Open the infowindow on the correct marker.
       infowindow.open(map, marker);
-    }
+        }
   }
 
   var komarkerinfo = function(data) {
-    this.title = ko.observable(data.title);
-    this.lat = ko.observable(data.location.lat);
-    this.lng = ko.observable(data.location.lng);
-    this.marker = ko.observable(data.marker);
+    this.title = data.title;
+    this.lat = data.location.lat;
+    this.lng = data.location.lng;
+    this.marker = data.marker;
 
-    this.location = ko.computed(function() {
-      return this.title() + " - " + this.lat() + "," + this.lng();
-    }, this);
+    this.location = this.title + " - " + this.lat + "," + this.lng;
   }
 
   var ViewModel = function() {
@@ -149,8 +148,5 @@ function initMap() {
 
     this.animatemarker = function(e) {
       e.marker.setAnimation(google.maps.Animation.BOUNCE);
-    }
-
+    };
   };
-
-ko.applyBindings(new ViewModel()); // This makes Knockout get to work
