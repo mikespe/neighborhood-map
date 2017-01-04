@@ -51,7 +51,7 @@ function initMap() {
     });
 
     //initializing the info window and the bounds
-    var largeInfowindow = new google.maps.InfoWindow();
+      largeInfowindow = new google.maps.InfoWindow();
     var bounds = new google.maps.LatLngBounds();
 
     // The following group uses the location array to create an array of markers on initialize.
@@ -91,6 +91,7 @@ function initMap() {
       // Clear the infowindow content to give the streetview time to load.
       infowindow.setContent('');
       infowindow.marker = marker;
+      infowindow.getMap();
       // Make sure the marker property is cleared if the infowindow is closed.
       infowindow.addListener('closeclick', function() {
         infowindow.close();
@@ -128,7 +129,6 @@ function initMap() {
       infowindow.open(map, marker);
         }
   }
-
   var komarkerinfo = function(data) {
     var self = this;
     this.title = data.title;
@@ -150,6 +150,6 @@ function initMap() {
 
     this.animatemarker = function(e) {
       e.marker.setAnimation(google.maps.Animation.BOUNCE);
-      populateInfoWindow(e.marker, new google.maps.InfoWindow());
+      populateInfoWindow(e.marker, largeInfowindow);
     };
   };
