@@ -129,6 +129,7 @@ function initMap() {
   }
 
   var komarkerinfo = function(data) {
+    var self = this;
     this.title = data.title;
     this.lat = data.location.lat;
     this.lng = data.location.lng;
@@ -148,5 +149,6 @@ function initMap() {
 
     this.animatemarker = function(e) {
       e.marker.setAnimation(google.maps.Animation.BOUNCE);
+      populateInfoWindow(e.marker, new google.maps.InfoWindow());
     };
   };
