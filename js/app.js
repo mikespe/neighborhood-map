@@ -43,7 +43,7 @@ var map;
 //the following is from udacity's google maps course with slight adjustments
 function initMap() {
   //empty array of markers
-  var markers = [];
+    markers = [];
     // Constructor creates a new map - only center and zoom are required.
     map = new google.maps.Map(document.getElementById('map'), {
       center: {lat: 40.96, lng: -74.13},
@@ -60,13 +60,15 @@ function initMap() {
       var position = locations[i].location;
       var title = locations[i].title;
       // Create a marker per location, and put into markers array.
-      var marker = new google.maps.Marker({
+        var marker = new google.maps.Marker({
         map: map,
         position: position,
         title: title,
         animation: google.maps.Animation.DROP,
         id: i
       });
+      //makes marker property of locations
+      locations[i].marker = marker;
       // Push the marker to our array of markers.
       markers.push(marker);
       // Create an onclick event to open an infowindow at each marker.
@@ -107,7 +109,7 @@ function initMap() {
               position: nearStreetViewLocation,
               pov: {
                 heading: heading,
-                pitch: 30
+                pitch: 15
               }
             };
           var panorama = new google.maps.StreetViewPanorama(
@@ -125,24 +127,29 @@ function initMap() {
     }
   }
 
-  var komarker = function(data) {
+  var komarkerinfo = function(data) {
     this.title = ko.observable(data.title);
     this.lat = ko.observable(data.location.lat);
     this.lng = ko.observable(data.location.lng);
+    this.marker = ko.observable(data.marker);
+
     this.location = ko.computed(function() {
       return this.title() + " - " + this.lat() + "," + this.lng();
     }, this);
   }
 
   var ViewModel = function() {
-    var self = this
+    var self = this;
 
     this.placelist = ko.observableArray([]);
 
     locations.forEach(function(locationitem){
-      self.placelist.push( new komarker(locationitem) );
+      self.placelist.push( new komarkerinfo(locationitem) );
     });
 
+    this.animatemarker = function(e) {
+      e.marker.setAnimation(google.maps.Animation.BOUNCE);
+    }
 
   };
 
