@@ -7,7 +7,16 @@
   }
 
   #info {
-    font-size: 26px;
+    font-size: 3em;
+    background-color: #f4f4f4;
+    text-align: center;
+    border: dotted;
+  }
+
+  #listitem {
+    border: solid;
+    border-width: 1px;
+    border-color: #919396;
   }
 
   #search-box {

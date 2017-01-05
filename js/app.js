@@ -51,7 +51,7 @@ function initMap() {
     });
 
     //initializing the info window and the bounds
-      largeInfowindow = new google.maps.InfoWindow();
+    largeInfowindow = new google.maps.InfoWindow();
     var bounds = new google.maps.LatLngBounds();
 
     // The following group uses the location array to create an array of markers on initialize.
