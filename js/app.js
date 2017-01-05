@@ -39,6 +39,7 @@ var locations = [
 ];
 
 var map;
+var largeInfowindow;
 //initializing the initmap function that is called in the google api callback
 //the following is from udacity's google maps course with slight adjustments
 function initMap() {
