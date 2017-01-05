@@ -8,7 +8,7 @@
   </head>
   <body>
     <div id='search'>
-      <input id='search-box' placeholder='search for something'>
+      <input id='search-box' placeholder='search for something' data-bind="textInput: placesearch, submit: searchsubmit">
     </div>
     <div id="info">
       <ul id='places' data-bind="foreach: placelist">
@@ -19,7 +19,7 @@
     </div>
     <div id="map">Error with map</div>
     <script src="js/lib/knockout-3.2.0.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA6KPvyWBZlthmtxptnLXReVOr80EYEI0c&callback=initMap"
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA6KPvyWBZlthmtxptnLXReVOr80EYEI0c&callback=initMap&libraries=places"
     async defer></script>
     <script src='js/app.js'></script>
     <script
