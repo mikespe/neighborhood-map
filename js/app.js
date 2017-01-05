@@ -78,6 +78,14 @@ function initMap() {
       });
       bounds.extend(markers[i].position);
     }
+    var input = document.getElementById('search-box');
+    var autocomplete = new google.maps.places.Autocomplete(input);
+    autocomplete.bindTo(bounds, map);
+
+    google.maps.event.addListener(autocomplete, 'place_changed', function () {
+        var place = autocomplete.getPlace();
+        console.log(place);
+      });
     // Extend the boundaries of the map for each marker
     map.fitBounds(bounds);
     ko.applyBindings(new ViewModel()); // This makes Knockout get to work
@@ -157,6 +165,7 @@ function initMap() {
     this.placesearch = ko.observable('');
 
     this.searchsubmit= function() {
-      //do something;
+      placeresult = autocomplete.getPlace();
+      console.log(placeresult);
     };
   };
