@@ -78,13 +78,20 @@ function initMap() {
       });
       bounds.extend(markers[i].position);
     }
+
     var input = document.getElementById('search-box');
     var autocomplete = new google.maps.places.Autocomplete(input);
     autocomplete.bindTo(bounds, map);
-
     google.maps.event.addListener(autocomplete, 'place_changed', function () {
         var place = autocomplete.getPlace();
         console.log(place);
+        newplace = {};
+        newplace.location = {lat: 0, lng: 0};
+        newplace.location.lat = place.geometry.location.lat();
+        newplace.location.lng = place.geometry.location.lng();
+        newplace.title = place.name
+        console.log(newplace);
+        // Create a marker per location, and put into markers array.
       });
     // Extend the boundaries of the map for each marker
     map.fitBounds(bounds);
@@ -165,7 +172,6 @@ function initMap() {
     this.placesearch = ko.observable('');
 
     this.searchsubmit= function() {
-      placeresult = autocomplete.getPlace();
-      console.log(placeresult);
+      //blah
     };
   };
