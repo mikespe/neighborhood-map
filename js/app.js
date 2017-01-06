@@ -90,7 +90,15 @@ function initMap() {
         newplace.location.lat = place.geometry.location.lat();
         newplace.location.lng = place.geometry.location.lng();
         newplace.title = place.name
-        console.log(newplace);
+        newplace.marker = marker = new google.maps.Marker({
+          map: map,
+          position: newplace.location,
+          title: newplace.name,
+          animation: google.maps.Animation.DROP,
+        });
+        markers.push(newplace.marker);
+        locations.push(newplace);
+        populateInfoWindow(newplace.marker, largeInfowindow);
         // Create a marker per location, and put into markers array.
       });
     // Extend the boundaries of the map for each marker
@@ -171,7 +179,7 @@ function initMap() {
 
     this.placesearch = ko.observable('');
 
-    this.searchsubmit= function() {
+    this.filteredlist= function() {
       //blah
     };
   };
