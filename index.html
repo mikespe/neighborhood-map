@@ -11,7 +11,7 @@
       <input id='search-box' placeholder='search for something' data-bind="textInput: placesearch, valueUpdate: keyup">
     </div>
     <div id="info">
-      <ul id='places' data-bind="foreach: placelist">
+      <ul id='places' data-bind="foreach: filteredplacelist">
           <li id='listitem' data-bind=''>
               <span data-bind="text: title, click: $root.animatemarker"> </span>
           </li>

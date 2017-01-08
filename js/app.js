@@ -79,18 +79,17 @@ function initMap() {
       bounds.extend(markers[i].position);
     }
 
-    var input = document.getElementById('search-box');
+/*    var input = document.getElementById('search-box');
     var autocomplete = new google.maps.places.Autocomplete(input);
     autocomplete.bindTo(bounds, map);
     google.maps.event.addListener(autocomplete, 'place_changed', function () {
         var place = autocomplete.getPlace();
-        console.log(place);
         newplace = {};
         newplace.location = {lat: 0, lng: 0};
         newplace.location.lat = place.geometry.location.lat();
         newplace.location.lng = place.geometry.location.lng();
         newplace.title = place.name
-        newplace.marker = marker = new google.maps.Marker({
+        newplace.marker = new google.maps.Marker({
           map: map,
           position: newplace.location,
           title: newplace.name,
@@ -99,8 +98,10 @@ function initMap() {
         markers.push(newplace.marker);
         locations.push(newplace);
         populateInfoWindow(newplace.marker, largeInfowindow);
+        console.log(locations);
         // Create a marker per location, and put into markers array.
       });
+      */
     // Extend the boundaries of the map for each marker
     map.fitBounds(bounds);
     ko.applyBindings(new ViewModel()); // This makes Knockout get to work
@@ -158,6 +159,7 @@ function initMap() {
     this.title = data.title;
     this.lat = data.location.lat;
     this.lng = data.location.lng;
+    this.visible = ko.observable(true);
     this.marker = data.marker;
 
     this.location = this.title + " - " + this.lat + "," + this.lng;
@@ -179,7 +181,21 @@ function initMap() {
 
     this.placesearch = ko.observable('');
 
-    this.filteredlist= function() {
-      //blah
-    };
+    this.filteredplacelist = ko.computed( function() {
+  		var filter = self.placesearch().toLowerCase();
+  		if (!filter) {
+  			self.placelist().forEach(function(locationitem){
+  				locationitem.visible(true);
+  			});
+  			return self.placelist();
+  		} else {
+  			return ko.utils.arrayFilter(self.placelist(), function(locationitem) {
+  				var string = locationitem.title.toLowerCase();
+  				var result = (string.search(filter) >= 0);
+  				locationitem.visible(result);
+  				return result;
+  			});
+  		}
+  	}, self);
+
   };
