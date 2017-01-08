@@ -161,9 +161,33 @@ function initMap() {
     this.lng = data.location.lng;
     this.visible = ko.observable(true);
     this.marker = data.marker;
+    this.url = '';
+    this.phonenumber = '';
 
-    this.location = this.title + " - " + this.lat + "," + this.lng;
-  }
+    this.markervisible = ko.computed(function() {
+      if(this.visible() === true) {
+        this.marker.setMap(map);
+      } else {
+        this.marker.setMap(null);
+      }
+      return true;
+    }, this);
+
+    this.consumerkey = 'YLXHOWLP04E14Y1ZU4OFO1DRY1WN1QAKD4JGZ02IZGVDX2YX';
+    this.consumersecret = 'IMVUAISVUNFZFN1T0P3LTHI5UV0EJUEFLD5XJURPD44RDGNE';
+
+    this.foursquarequery = 'https://api.foursquare.com/v2/venues/search?ll='+ this.lat + ',' + this.lng + '&client_id=' + this.consumerkey + '&client_secret=' + this.consumersecret + '&v=20170108' + '&query=' + this.title;
+
+    $.getJSON(self.foursquarequery).done(function(data) {
+      console.log(data);
+      var results = data.response.venues[0];
+      self.url = results.url;
+      self.phone = results.contact.phone;
+    }).fail(function() {
+      console.log('fail to load yelp info');
+    });
+
+  };
 
   var ViewModel = function() {
     var self = this;
@@ -182,17 +206,17 @@ function initMap() {
     this.placesearch = ko.observable('');
 
     this.filteredplacelist = ko.computed( function() {
-  		var filter = self.placesearch().toLowerCase();
-  		if (!filter) {
-  			self.placelist().forEach(function(locationitem){
-  				locationitem.visible(true);
+  		var searchbox = self.placesearch().toLowerCase();
+  		if (!searchbox) {
+  			self.placelist().forEach(function(markerlist){
+  				markerlist.visible(true);
   			});
   			return self.placelist();
   		} else {
-  			return ko.utils.arrayFilter(self.placelist(), function(locationitem) {
-  				var string = locationitem.title.toLowerCase();
-  				var result = (string.search(filter) >= 0);
-  				locationitem.visible(result);
+  			return ko.utils.arrayFilter(self.placelist(), function(markerlist) {
+  				var string = markerlist.title.toLowerCase();
+  				var result = (string.search(searchbox) >= 0);
+  				markerlist.visible(result);
   				return result;
   			});
   		}
