@@ -79,7 +79,7 @@ function initMap() {
       bounds.extend(markers[i].position);
     }
 
-/*    var input = document.getElementById('search-box');
+    var input = document.getElementById('search-box');
     var autocomplete = new google.maps.places.Autocomplete(input);
     autocomplete.bindTo(bounds, map);
     google.maps.event.addListener(autocomplete, 'place_changed', function () {
@@ -92,7 +92,7 @@ function initMap() {
         newplace.marker = new google.maps.Marker({
           map: map,
           position: newplace.location,
-          title: newplace.name,
+          title: newplace.title,
           animation: google.maps.Animation.DROP,
         });
         markers.push(newplace.marker);
@@ -101,7 +101,7 @@ function initMap() {
         console.log(locations);
         // Create a marker per location, and put into markers array.
       });
-      */
+
     // Extend the boundaries of the map for each marker
     map.fitBounds(bounds);
     ko.applyBindings(new ViewModel()); // This makes Knockout get to work
@@ -132,7 +132,7 @@ function initMap() {
           var nearStreetViewLocation = data.location.latLng;
           var heading = google.maps.geometry.spherical.computeHeading(
             nearStreetViewLocation, marker.position);
-            infowindow.setContent('<div id="infowindowinfo">' + marker.title + '</div><div id="pano"></div>');
+            infowindow.setContent('<div id="infowindowinfo">' + marker.title +'</div><div id="pano"></div>');
             var panoramaOptions = {
               position: nearStreetViewLocation,
               pov: {
@@ -179,13 +179,13 @@ function initMap() {
     this.foursquarequery = 'https://api.foursquare.com/v2/venues/search?ll='+ this.lat + ',' + this.lng + '&client_id=' + this.consumerkey + '&client_secret=' + this.consumersecret + '&v=20170108' + '&query=' + this.title;
 
     $.getJSON(self.foursquarequery).done(function(data) {
-      console.log(data);
-      var results = data.response.venues[0];
-      self.url = results.url;
-      self.phone = results.contact.phone;
+      self.url = data.response.venues[0].url;
+      self.phonenumber = data.response.venues[0].contact.phone;
     }).fail(function() {
       console.log('fail to load yelp info');
     });
+
+
 
   };
 
