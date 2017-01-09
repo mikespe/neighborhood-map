@@ -40,6 +40,8 @@ var locations = [
 
 var map;
 var largeInfowindow;
+var fsquareresults;
+var foursquaredata = {};
 //initializing the initmap function that is called in the google api callback
 //the following is from udacity's google maps course with slight adjustments
 function initMap() {
@@ -132,7 +134,7 @@ function initMap() {
           var nearStreetViewLocation = data.location.latLng;
           var heading = google.maps.geometry.spherical.computeHeading(
             nearStreetViewLocation, marker.position);
-            infowindow.setContent('<div id="infowindowinfo">' + marker.title +'</div><div id="pano"></div>');
+            infowindow.setContent('<div id="infowindowinfo">' + marker.title + ' ' + '<div>URL & Phonenumber:' + ' ' +foursquaredata.phoneurl +'</div></div><div id="pano"></div>');
             var panoramaOptions = {
               position: nearStreetViewLocation,
               pov: {
@@ -153,7 +155,8 @@ function initMap() {
       // Open the infowindow on the correct marker.
       infowindow.open(map, marker);
         }
-  }
+  };
+
   var komarkerinfo = function(data) {
     var self = this;
     this.title = data.title;
@@ -163,6 +166,8 @@ function initMap() {
     this.marker = data.marker;
     this.url = '';
     this.phonenumber = '';
+    this.formattedresults = [];
+
 
     this.markervisible = ko.computed(function() {
       if(this.visible() === true) {
@@ -176,16 +181,18 @@ function initMap() {
     this.consumerkey = 'YLXHOWLP04E14Y1ZU4OFO1DRY1WN1QAKD4JGZ02IZGVDX2YX';
     this.consumersecret = 'IMVUAISVUNFZFN1T0P3LTHI5UV0EJUEFLD5XJURPD44RDGNE';
 
-    this.foursquarequery = 'https://api.foursquare.com/v2/venues/search?ll='+ this.lat + ',' + this.lng + '&client_id=' + this.consumerkey + '&client_secret=' + this.consumersecret + '&v=20170108' + '&query=' + this.title;
+    this.foursquarequery = 'https://api.foursquare.com/v2/venues/search?ll='+ self.lat + ',' + self.lng + '&client_id=' + this.consumerkey + '&client_secret=' + this.consumersecret + '&v=20170108' + '&query=' + self.title;
 
-    $.getJSON(self.foursquarequery).done(function(data) {
+    $.getJSON(this.foursquarequery).done(function(data) {
       self.url = data.response.venues[0].url;
       self.phonenumber = data.response.venues[0].contact.phone;
+      self.formattedresults.push(self.url + ' ' + self.phonenumber);
+      var ar = self.formattedresults[0];
+      foursquaredata.phoneurl = ar;
+      console.log(foursquaredata.phoneurl);
     }).fail(function() {
       console.log('fail to load yelp info');
     });
-
-
 
   };
 
