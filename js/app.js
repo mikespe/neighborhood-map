@@ -37,10 +37,9 @@ var locations = [
     },
   },
 ];
-
+//initializing global variables
 var map;
 var largeInfowindow;
-var fsquareresults;
 var foursquaredata = {};
 //initializing the initmap function that is called in the google api callback
 //the following is from udacity's google maps course with slight adjustments
@@ -76,31 +75,42 @@ function initMap() {
       markers.push(marker);
       // Create an onclick event to open an infowindow at each marker.
       marker.addListener('click', function() {
+        //populate infowindow on click
         populateInfoWindow(this, largeInfowindow);
       });
+      //exten bounds of map to new marker positions
       bounds.extend(markers[i].position);
     }
-
+    //select input box to apply autocomplete to
     var input = document.getElementById('search-box');
+    //initialize autocomplete on input box
     var autocomplete = new google.maps.places.Autocomplete(input);
+    //bind autocomplete to the bounds of the map, and the map itself
     autocomplete.bindTo(bounds, map);
+    //add eventlistener to event change in search box
     google.maps.event.addListener(autocomplete, 'place_changed', function () {
+        //get place info on autocompleted place
         var place = autocomplete.getPlace();
+        //intialize empty object, set location and title
         newplace = {};
         newplace.location = {lat: 0, lng: 0};
         newplace.location.lat = place.geometry.location.lat();
         newplace.location.lng = place.geometry.location.lng();
         newplace.title = place.name
+        //create marker associated with the new object with new info
         newplace.marker = new google.maps.Marker({
           map: map,
           position: newplace.location,
           title: newplace.title,
           animation: google.maps.Animation.DROP,
         });
+        //push new object marker onto the markers variable
         markers.push(newplace.marker);
+        //add new place to model
         locations.push(newplace);
+        //populate infowindow
         populateInfoWindow(newplace.marker, largeInfowindow);
-        console.log(locations);
+        //console.log(locations);
         // Create a marker per location, and put into markers array.
       });
 
@@ -121,20 +131,28 @@ function initMap() {
       infowindow.getMap();
       // Make sure the marker property is cleared if the infowindow is closed.
       infowindow.addListener('closeclick', function() {
+        //close infowinow
         infowindow.close();
+        //on close, stop animation
         marker.setAnimation(null);
       });
+      //init stretview service
       var streetViewService = new google.maps.StreetViewService();
+      //set radius for streetview
       var radius = 50;
       // In case the status is OK, which means the pano was found, compute the
       // position of the streetview image, then calculate the heading, then get a
       // panorama from that and set the options
       function getStreetView(data, status) {
+        //if status is ok
         if (status == google.maps.StreetViewStatus.OK) {
+          //set info
           var nearStreetViewLocation = data.location.latLng;
           var heading = google.maps.geometry.spherical.computeHeading(
             nearStreetViewLocation, marker.position);
+            //populate infowindow with good info
             infowindow.setContent('<div id="infowindowinfo">' + marker.title + ' ' + '<div>URL & Phonenumber:' + ' ' +foursquaredata.phoneurl +'</div></div><div id="pano"></div>');
+            //set options on the panorama
             var panoramaOptions = {
               position: nearStreetViewLocation,
               pov: {
@@ -142,87 +160,121 @@ function initMap() {
                 pitch: 15
               }
             };
+            //init panorama of location under pano id in infowindow
           var panorama = new google.maps.StreetViewPanorama(
             document.getElementById('pano'), panoramaOptions);
         } else {
+          //if status isn't ok. change info window to tell user
           infowindow.setContent('<div>' + marker.title + '</div>' +
             '<div>No Street View Found</div>');
         }
       }
       // Use streetview service to get the closest streetview image within
-      // 50 meters of the markers position
+      // 50 meters of the markers position using radius
       streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
       // Open the infowindow on the correct marker.
       infowindow.open(map, marker);
         }
   };
 
+  //init view of marker and 4square ajax requests
   var komarkerinfo = function(data) {
     var self = this;
     this.title = data.title;
     this.lat = data.location.lat;
     this.lng = data.location.lng;
+    //allows us to 'tell' the marker and list items to be visible or not
     this.visible = ko.observable(true);
     this.marker = data.marker;
     this.url = '';
     this.phonenumber = '';
+    //initially store 4square results
     this.formattedresults = [];
 
-
+    //controling the view of the markers
     this.markervisible = ko.computed(function() {
+      //if the observable visible is true
       if(this.visible() === true) {
+        //set this marker to be visible by passing in map to setMap
         this.marker.setMap(map);
+        //if visible is false
       } else {
+        //tell markers to hide by passing in null to the markers
         this.marker.setMap(null);
       }
       return true;
     }, this);
 
+    //store keys for 4square
     this.consumerkey = 'YLXHOWLP04E14Y1ZU4OFO1DRY1WN1QAKD4JGZ02IZGVDX2YX';
     this.consumersecret = 'IMVUAISVUNFZFN1T0P3LTHI5UV0EJUEFLD5XJURPD44RDGNE';
 
+    //store query before ajax request
     this.foursquarequery = 'https://api.foursquare.com/v2/venues/search?ll='+ self.lat + ',' + self.lng + '&client_id=' + this.consumerkey + '&client_secret=' + this.consumersecret + '&v=20170108' + '&query=' + self.title;
 
+    //shorthand ajax request
     $.getJSON(this.foursquarequery).done(function(data) {
+      //if successful, perform below operations
+      //set url, phone and formattedresults
       self.url = data.response.venues[0].url;
       self.phonenumber = data.response.venues[0].contact.phone;
       self.formattedresults.push(self.url + ' ' + self.phonenumber);
+      //take first array of values because there is too many??
       var ar = self.formattedresults[0];
+      //pass data to global so it can be used in populateInfoWindow function
       foursquaredata.phoneurl = ar;
-      console.log(foursquaredata.phoneurl);
+      //console.log(foursquaredata.phoneurl);
     }).fail(function() {
       console.log('fail to load yelp info');
     });
 
   };
 
+  //init viewmodel
   var ViewModel = function() {
+    //scope trick to always have a this referring to viemodel
     var self = this;
 
+    //init observable array
     this.placelist = ko.observableArray([]);
 
+    //for the locations, place them in observableArray
     locations.forEach(function(locationitem){
       self.placelist.push( new komarkerinfo(locationitem) );
     });
 
+    //when list is clicked, perform this function
     this.animatemarker = function(e) {
+      //this list clicked, animate that specific marker
       e.marker.setAnimation(google.maps.Animation.BOUNCE);
+      //populate specific infowindow
       populateInfoWindow(e.marker, largeInfowindow);
     };
 
+    //init observable that changes based on user input
     this.placesearch = ko.observable('');
 
+    //list filtered based on search input
     this.filteredplacelist = ko.computed( function() {
+      //set input to lowercase
   		var searchbox = self.placesearch().toLowerCase();
+      //if theres nothing in the input box
   		if (!searchbox) {
+        //each placelist and marker will be visible
   			self.placelist().forEach(function(markerlist){
   				markerlist.visible(true);
   			});
+        //return the placelist
   			return self.placelist();
+        //if input has input in it
   		} else {
+        //return sorted list accoring to the executed function, help from http://www.knockmeout.net/2011/04/utility-functions-in-knockoutjs.html
   			return ko.utils.arrayFilter(self.placelist(), function(markerlist) {
+          //set string to the lowercase title of the list
   				var string = markerlist.title.toLowerCase();
+          //set result to the result of a search of the markerlist titles and the searchbox input.
   				var result = (string.search(searchbox) >= 0);
+          //make certain markers on the list depending on match of search.
   				markerlist.visible(result);
   				return result;
   			});
