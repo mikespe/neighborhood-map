@@ -24,7 +24,14 @@
     height: 50px;
   }
   /* Optional: Makes the sample page fill the window. */
-  html, body {
+  html {
+    height: 100%;
+    width: 100%
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
     height: 100%;
     width: 100%
     margin: 0;
@@ -34,8 +41,4 @@
   #pano {
     width: 300px;
     height: 300px;
-  }
-
-  #infowindowinfo {
-
   }

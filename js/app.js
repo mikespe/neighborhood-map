@@ -41,9 +41,12 @@ var locations = [
 var map;
 var largeInfowindow;
 var foursquaredata = {};
+
+//init error handler
 //initializing the initmap function that is called in the google api callback
 //the following is from udacity's google maps course with slight adjustments
 function initMap() {
+
   //empty array of markers
     markers = [];
     // Constructor creates a new map - only center and zoom are required.
@@ -77,6 +80,12 @@ function initMap() {
       marker.addListener('click', function() {
         //populate infowindow on click
         populateInfoWindow(this, largeInfowindow);
+        var self = this;
+        this.setAnimation(google.maps.Animation.BOUNCE);
+        setTimeout(function() {
+            self.setAnimation(null);
+        }, 2800);
+
       });
       //exten bounds of map to new marker positions
       bounds.extend(markers[i].position);
@@ -115,8 +124,16 @@ function initMap() {
       });
 
     // Extend the boundaries of the map for each marker
-    map.fitBounds(bounds);
+    google.maps.event.addDomListener(window, 'resize', function() {
+      map.fitBounds(bounds); // `bounds` is a `LatLngBounds` object
+    });
+
     ko.applyBindings(new ViewModel()); // This makes Knockout get to work
+  };
+
+  function googleapierror() {
+    //what gets executed when there is an error loading googlee maps api
+     alert('google maps api isnt loading properly');
   };
 
   // This function populates the infowindow when the marker is clicked. We'll only allow
@@ -151,7 +168,7 @@ function initMap() {
           var heading = google.maps.geometry.spherical.computeHeading(
             nearStreetViewLocation, marker.position);
             //populate infowindow with good info
-            infowindow.setContent('<div id="infowindowinfo">' + marker.title + ' ' + '<div>URL & Phonenumber:' + ' ' +foursquaredata.phoneurl +'</div></div><div id="pano"></div>');
+            infowindow.setContent('<div id="infowindowinfo">' + marker.title + ' ' + '<div>URL & Phonenumber:' + ' ' + marker.url + ' ' + marker.phonenumber +'</div></div><div id="pano"></div>');
             //set options on the panorama
             var panoramaOptions = {
               position: nearStreetViewLocation,
@@ -174,6 +191,10 @@ function initMap() {
       streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
       // Open the infowindow on the correct marker.
       infowindow.open(map, marker);
+      marker.addListener('click', function() {
+        map.panTo(marker.getPosition());
+      });
+
         }
   };
 
@@ -216,16 +237,17 @@ function initMap() {
     $.getJSON(this.foursquarequery).done(function(data) {
       //if successful, perform below operations
       //set url, phone and formattedresults
-      self.url = data.response.venues[0].url;
-      self.phonenumber = data.response.venues[0].contact.phone;
-      self.formattedresults.push(self.url + ' ' + self.phonenumber);
-      //take first array of values because there is too many??
-      var ar = self.formattedresults[0];
-      //pass data to global so it can be used in populateInfoWindow function
-      foursquaredata.phoneurl = ar;
-      //console.log(foursquaredata.phoneurl);
+      console.log(data);
+      self.marker.url = data.response.venues[0].url;
+      if(typeof self.marker.url === 'undefined') {
+        self.marker.url = 'URL not found,';
+      }
+      self.marker.phonenumber = data.response.venues[0].contact.phone;
+      if(typeof self.marker.phonenumber === 'undefined') {
+        self.marker.phonenumber = 'Phonenumber not found';
+      }
     }).fail(function() {
-      console.log('fail to load yelp info');
+      alert('fail to load yelp info');
     });
 
   };
@@ -249,6 +271,9 @@ function initMap() {
       e.marker.setAnimation(google.maps.Animation.BOUNCE);
       //populate specific infowindow
       populateInfoWindow(e.marker, largeInfowindow);
+      setTimeout(function() {
+          e.marker.setAnimation(null);
+      }, 2800);
     };
 
     //init observable that changes based on user input
