@@ -106,6 +106,7 @@ function initMap() {
         newplace.location.lat = place.geometry.location.lat();
         newplace.location.lng = place.geometry.location.lng();
         newplace.title = place.name
+        console.log(place);
         //create marker associated with the new object with new info
         newplace.marker = new google.maps.Marker({
           map: map,
@@ -113,6 +114,8 @@ function initMap() {
           title: newplace.title,
           animation: google.maps.Animation.DROP,
         });
+        newplace.marker.url = place.website;
+        newplace.marker.phonenumber = place.formatted_phone_number;
         //push new object marker onto the markers variable
         markers.push(newplace.marker);
         //add new place to model
@@ -168,7 +171,7 @@ function initMap() {
           var heading = google.maps.geometry.spherical.computeHeading(
             nearStreetViewLocation, marker.position);
             //populate infowindow with good info
-            infowindow.setContent('<div id="infowindowinfo">' + marker.title + ' ' + '<div>URL & Phonenumber:' + ' ' + marker.url + ' ' + marker.phonenumber +'</div></div><div id="pano"></div>');
+            infowindow.setContent('<div id="infowindowinfo">' + marker.title + ' ' + '<div>URL & Phonenumber:' + ' ' + marker.url + ' - ' + marker.phonenumber +'</div></div><div id="pano"></div>');
             //set options on the panorama
             var panoramaOptions = {
               position: nearStreetViewLocation,
@@ -237,7 +240,6 @@ function initMap() {
     $.getJSON(this.foursquarequery).done(function(data) {
       //if successful, perform below operations
       //set url, phone and formattedresults
-      console.log(data);
       self.marker.url = data.response.venues[0].url;
       if(typeof self.marker.url === 'undefined') {
         self.marker.url = 'URL not found,';
