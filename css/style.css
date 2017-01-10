@@ -2,12 +2,12 @@
   /* Always set the map height explicitly to define the size of the div
    * element that contains the map. */
   #map {
-    height: 50%;
+    height: 60%;
     width: 100%
   }
 
   #info {
-    font-size: 3em;
+    font-size: 2em;
     background-color: #f4f4f4;
     text-align: center;
     border: dotted;
